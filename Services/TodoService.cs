@@ -38,9 +38,15 @@ namespace TodoAPIDotNet.Services
             }
         }
 
-        public Task DeleteTodoAsync(Guid id)
+        public async Task DeleteTodoAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var todo = await _todoDbContext.Todos.FindAsync(id);
+
+            if (todo == null)
+                throw new Exception($"Todo item with id {id} not found.");
+
+            _todoDbContext.Todos.Remove(todo);
+            await _todoDbContext.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<Todo>> GetAllAsync()
@@ -51,18 +57,69 @@ namespace TodoAPIDotNet.Services
             {
                 throw new Exception("No Todo items found.");
             }
-            
+
             return todos;
         }
 
-        public Task<Todo> GetByIdAsync(Guid id)
+        public async Task<Todo> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var todo = await _todoDbContext.Todos.FindAsync(id);
+
+            if (todo == null)
+            {
+                throw new KeyNotFoundException($"Todo item with id {id} not found.");
+            }
+
+            return todo;
         }
 
-        public Task UpdateTodoAsync(UpdateTodoRequest request)
+        public async Task UpdateTodoAsync(Guid id, UpdateTodoRequest request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var todo = await _todoDbContext.Todos.FindAsync(id);
+
+                if (todo == null)
+                {
+                    throw new KeyNotFoundException($"Todo item with id {id} not found.");
+                }
+
+                if (!string.IsNullOrEmpty(request.Title))
+                {
+                    todo.Title = request.Title;
+                }
+
+                if (!string.IsNullOrEmpty(request.Description))
+                {
+                    todo.Description = request.Description;
+                }
+
+                if (request.IsComplete != null)
+                {
+                    todo.IsComplete = request.IsComplete.Value;
+                }
+
+                if (request.DueDate != null)
+                {
+                    todo.DueDate = request.DueDate.Value;
+                }
+
+                if (request.Priority != null)
+                {
+                    todo.Priority = request.Priority.Value;
+                }
+
+                todo.UpdatedAt = DateTime.UtcNow;
+
+                await _todoDbContext.SaveChangesAsync();
+            }
+            catch (System.Exception e)
+            {
+                string message = $"An error occurred while updating a Todo item with id: {id}.";
+
+                _logger.LogError(e, message);
+                throw new Exception(message);
+            }
         }
     }
 }

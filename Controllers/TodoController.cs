@@ -63,13 +63,18 @@ namespace TodoAPIDotNet.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateTodoAsync([FromBody] UpdateTodoRequest request)
+        public async Task<IActionResult> UpdateTodoAsync(Guid id, UpdateTodoRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             try
             {
-                await _todoService.UpdateTodoAsync(request);
+                await _todoService.UpdateTodoAsync(id, request);
 
-                return Ok();
+                return Ok(new { message = $"Todo item with id {id} successfully updated." });
             }
             catch (System.Exception e)
             {
@@ -80,6 +85,27 @@ namespace TodoAPIDotNet.Controllers
             }
         }
 
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetByIdAsync(Guid id)
+        {
+            try
+            {
+                var todo = await _todoService.GetByIdAsync(id);
+
+                if (todo == null)
+                    return NotFound(new { message = $"Todo item with id: {id} was not found."});
+                
+                return Ok(new { message = $"Successfully retrieved Todo with id: {id}.", data = todo});
+            }
+            catch (System.Exception e)
+            {
+                string message = $"An error occurred while retrieving a Todo item with id {id}.";
+
+                _logger.LogError(e, message);
+                return StatusCode(500, new { message = message, error = e.Message});
+            }
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTodoAsync(Guid id)
         {
@@ -87,7 +113,7 @@ namespace TodoAPIDotNet.Controllers
             {
                 await _todoService.DeleteTodoAsync(id);
 
-                return Ok();
+                return Ok(new { message = $"Todo item with id {id} successfully deleted." });
             }
             catch (System.Exception e)
             {

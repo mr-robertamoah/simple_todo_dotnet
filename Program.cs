@@ -1,6 +1,8 @@
 using TodoAPIDotNet.AppDataContext;
+using TodoAPIDotNet.Interfaces;
 using TodoAPIDotNet.Middleware;
 using TodoAPIDotNet.Models;
+using TodoAPIDotNet.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,8 @@ builder.Services.AddSingleton<TodoDbContext>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services.AddLogging();
+
+builder.Services.AddScoped<ITodoService, TodoService>();
 
 var app = builder.Build();
 
