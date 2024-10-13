@@ -1,10 +1,11 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using TodoAPIDotNet.Models;
 
 namespace TodoAPIDotNet.AppDataContext
 {
-    public class TodoDbContext : DbContext
+    public class TodoDbContext : IdentityDbContext<User>
     {
         private readonly DbSettings _dbSettings;
         public TodoDbContext(IOptions<DbSettings> options)
@@ -22,8 +23,13 @@ namespace TodoAPIDotNet.AppDataContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Todo>()
-                .ToTable("TodoAPI")
+                .ToTable("Todos")
                 .HasKey(t => t.Id);
+
+            modelBuilder.Entity<Todo>()
+                .HasOne<User>(t => t.User)
+                .WithMany(u => u.Todos)
+                .HasForeignKey(t => t.UserId);
         }
     }
 }
