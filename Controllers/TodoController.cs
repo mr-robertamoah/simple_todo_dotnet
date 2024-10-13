@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoAPIDotNet.Interfaces;
 
 namespace TodoAPIDotNet.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class TodoController : ControllerBase
@@ -49,7 +51,7 @@ namespace TodoAPIDotNet.Controllers
 
             try
             {
-                await _todoService.CreateTodoAsync(request);
+                await _todoService.CreateTodoAsync(request, User);
 
                 return Ok( new { message = "Todo successfully created."} );
             }
@@ -63,7 +65,7 @@ namespace TodoAPIDotNet.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateTodoAsync(Guid id, UpdateTodoRequest request)
+        public async Task<IActionResult> UpdateTodoAsync(UpdateTodoRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -72,9 +74,9 @@ namespace TodoAPIDotNet.Controllers
 
             try
             {
-                await _todoService.UpdateTodoAsync(id, request);
+                await _todoService.UpdateTodoAsync(request, User);
 
-                return Ok(new { message = $"Todo item with id {id} successfully updated." });
+                return Ok(new { message = $"Todo item with id {request.Id} successfully updated." });
             }
             catch (System.Exception e)
             {
@@ -101,7 +103,6 @@ namespace TodoAPIDotNet.Controllers
             {
                 string message = $"An error occurred while retrieving a Todo item with id {id}.";
 
-                _logger.LogError(e, message);
                 return StatusCode(500, new { message = message, error = e.Message});
             }
         }
@@ -119,7 +120,6 @@ namespace TodoAPIDotNet.Controllers
             {
                 string message = "An error occurred while deleting a Todo item.";
 
-                _logger.LogError(e, message);
                 return Problem(message);
             }
         }

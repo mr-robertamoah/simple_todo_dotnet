@@ -1,3 +1,4 @@
+#nullable enable
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -15,7 +16,7 @@ namespace TodoAPIDotNet.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         [ForeignKey("User")]
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public User User { get; set; }
 
         public Todo()

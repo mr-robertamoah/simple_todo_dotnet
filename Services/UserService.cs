@@ -16,12 +16,12 @@ namespace TodoAPIDotNet.Services
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<TodoService> _logger;
-        private readonly UserDbContext _context;
+        private readonly TodoDbContext _context;
         private readonly IMapper _mapper;
 
         public UserService(
             IConfiguration configuration,
-            UserDbContext context,
+            TodoDbContext context,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             ILogger<TodoService> logger,
@@ -36,7 +36,7 @@ namespace TodoAPIDotNet.Services
             _signInManager = signInManager;
         }
 
-        public async Task DeleteAccountAsync(Guid id)
+        public async Task DeleteAccountAsync(string id)
         {
             try
             {
@@ -66,9 +66,43 @@ namespace TodoAPIDotNet.Services
         //     throw new NotImplementedException();
         // }
 
-        public async Task<User> GetByIdAsync(Guid id)
+        public async Task<UserDTO?> GetByIdAsync(string id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                User? user = await _context.FindAsync<User>(id);
+
+                return _mapper.Map<UserDTO>(user);
+            }
+            catch (Exception e)
+            {
+                ThrowException(
+                    "Something unfortunate happened while getting User information.",
+                    e
+                );
+
+                return null;
+            }
+        }
+
+        public async Task LogoutAsync(ClaimsPrincipal principal)
+        {
+            try
+            {
+                var result = _signInManager.IsSignedIn(principal);
+
+                if (!result)
+                    throw new Exception("You cannot log out when not logged in.");
+
+                await _signInManager.SignOutAsync();
+            }
+            catch (Exception e)
+            {
+                ThrowException(
+                    "Something unfortunate happened while logging out.",
+                    e
+                );
+            }
         }
 
         public async Task<string?> LoginAsync(UserLoginRequest request)
@@ -142,7 +176,7 @@ namespace TodoAPIDotNet.Services
 
                 var signInResult = await _signInManager.PasswordSignInAsync(
                     user.UserName,
-                    user.Password,
+                    request.Password,
                     false,
                     false
                 );

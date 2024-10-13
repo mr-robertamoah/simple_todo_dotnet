@@ -2,6 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 public class UpdateTodoRequest
 {
+    [Required]
+    public Guid Id { get; set; }
     [StringLength(100)]
     public string Title { get; set; }
     [StringLength(500)]

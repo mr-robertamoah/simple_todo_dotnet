@@ -14,7 +14,7 @@ namespace TodoAPIDotNet.Controllers
             _service = service;
         }
 
-        [HttpPost]
+        [HttpPost("login")]
         public async Task<IActionResult> LoginAsync(UserLoginRequest request)
         {
             if (!ModelState.IsValid)
@@ -22,12 +22,19 @@ namespace TodoAPIDotNet.Controllers
                 return BadRequest(ModelState);
             }
 
-            string? token = await _service.LoginAsync(request);
+            try
+            {
+                string? token = await _service.LoginAsync(request);
 
-            return Ok( new { message = "User successfully logged in.", token } );
+                return Ok( new { message = "User successfully logged in.", token } );
+            }
+            catch (Exception e)
+            {
+                return  StatusCode(500, e.Message);
+            }
         }
 
-        [HttpPost]
+        [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync(UserRegisterRequest request)
         {
             if (!ModelState.IsValid)
@@ -35,28 +42,65 @@ namespace TodoAPIDotNet.Controllers
                 return BadRequest(ModelState);
             }
 
-            string? token = await _service.RegisterAsync(request);
+            try
+            {
+                string? token = await _service.RegisterAsync(request);
+                
+                return Ok( new { message = "User successfully Registered.", token } );
+            }
+            catch (Exception e)
+            {
+                return  StatusCode(500, e.Message);
+            }
 
-            return Ok( new { message = "User successfully Registered.", token } );
         }
 
-        [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetByIdAsync(Guid id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetByIdAsync(string id)
         {
-            var todo = await _service.GetByIdAsync(id);
+            try
+            {
+                var data = await _service.GetByIdAsync(id);
 
-            if (todo == null)
-                return NotFound(new { message = $"User with id: {id} was not found."});
-            
-            return Ok(new { message = $"Successfully retrieved the information of User with id: {id}.", data = todo});
+                if (data == null)
+                    return NotFound(new { message = $"User with id: {id} was not found."});
+                
+                return Ok(new { message = $"Successfully retrieved the information of User with id: {id}.", data});
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAccountAsync(Guid id)
+        public async Task<IActionResult> DeleteAccountAsync(string id)
         {
-            await _service.DeleteAccountAsync(id);
+            try
+            {
+                await _service.DeleteAccountAsync(id);
 
-            return Ok(new { message = $"User account with id {id} has been successfully deleted." });
+                return Ok(new { message = $"User account with id {id} has been successfully deleted." });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> LogoutAsync()
+        {
+            try
+            {
+                await _service.LogoutAsync(User);
+
+                return Ok(new { message = $"Successfully logged out." });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
     }
 }

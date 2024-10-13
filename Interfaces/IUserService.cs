@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using TodoAPIDotNet.Models;
 
 namespace TodoAPIDotNet.Interfaces
@@ -5,9 +6,10 @@ namespace TodoAPIDotNet.Interfaces
     public interface IUserService
     {
         // Task<IEnumerable<User>> GetAllAsync();
-        Task<User> GetByIdAsync(Guid id);
+        Task<UserDTO?> GetByIdAsync(string id);
+        Task LogoutAsync(ClaimsPrincipal principal);
         Task<string?> LoginAsync(UserLoginRequest request);
         Task<string?> RegisterAsync(UserRegisterRequest request);
-        Task DeleteAccountAsync(Guid id);
+        Task DeleteAccountAsync(string id);
     }
 }

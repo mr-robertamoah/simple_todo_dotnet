@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using TodoAPIDotNet.Models;
 
 namespace TodoAPIDotNet.Interfaces
@@ -6,8 +7,8 @@ namespace TodoAPIDotNet.Interfaces
     {
         Task<IEnumerable<Todo>> GetAllAsync();
         Task<Todo> GetByIdAsync(Guid id);
-        Task CreateTodoAsync(CreateTodoRequest request);
-        Task UpdateTodoAsync(Guid id, UpdateTodoRequest request);
+        Task CreateTodoAsync(CreateTodoRequest request, ClaimsPrincipal principal);
+        Task UpdateTodoAsync(UpdateTodoRequest request, ClaimsPrincipal principal);
         Task DeleteTodoAsync(Guid id);
     }
 }

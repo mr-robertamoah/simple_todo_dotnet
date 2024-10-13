@@ -20,7 +20,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.Configure<DbSettings>(builder.Configuration.GetSection("DbSettings"));
 builder.Services.AddSingleton<TodoDbContext>();
-builder.Services.AddSingleton<UserDbContext>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
