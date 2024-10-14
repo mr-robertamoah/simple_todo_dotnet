@@ -36,14 +36,11 @@ namespace TodoAPIDotNet.Services
             _signInManager = signInManager;
         }
 
-        public async Task DeleteAccountAsync(string id)
+        public async Task DeleteAccountAsync(ClaimsPrincipal principal)
         {
             try
             {
-                User? user = await _context.FindAsync<User>(id);
-
-                if (user == null)
-                    throw new Exception($"User account with id {id} was not found");
+                User user = await GetUserFromPrincipal(principal);
 
                 await _signInManager.SignOutAsync();
 
@@ -66,12 +63,12 @@ namespace TodoAPIDotNet.Services
         //     throw new NotImplementedException();
         // }
 
-        public async Task<UserDTO?> GetByIdAsync(string id)
+        public async Task<UserDTO?> GetByTokenAsync(ClaimsPrincipal principal)
         {
             try
             {
-                User? user = await _context.FindAsync<User>(id);
-                
+                User user = await GetUserFromPrincipal(principal);
+
                 return _mapper.Map<UserDTO>(user);
             }
             catch (Exception e)
@@ -256,6 +253,15 @@ namespace TodoAPIDotNet.Services
         {
             _logger.LogError(message, e);
             throw new Exception(message);
+        }
+
+        private async Task<User> GetUserFromPrincipal(ClaimsPrincipal principal)
+        {
+            User? user = await _userManager.GetUserAsync(principal);
+            if (user == null)
+                throw new Exception("User is not logged in.");
+
+            return user;
         }
 
     }

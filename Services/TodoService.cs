@@ -57,6 +57,10 @@ namespace TodoAPIDotNet.Services
             if (todo == null)
                 throw new Exception($"Todo item with id {id} not found.");
 
+            User user = await GetUserFromPrincipal(principal);
+
+            UserMustOwnTodo(user, todo);
+            
             _todoDbContext.Todos.Remove(todo);
             await _todoDbContext.SaveChangesAsync();
         }
@@ -85,8 +89,7 @@ namespace TodoAPIDotNet.Services
             
             User user = await GetUserFromPrincipal(principal);
 
-            if (user.Id != todo.UserId)
-                throw new Exception("You do not own this Todo item.");
+            UserMustOwnTodo(user, todo);
             
             return todo;
         }
@@ -146,6 +149,12 @@ namespace TodoAPIDotNet.Services
                 throw new Exception("User is not logged in.");
 
             return user;
+        }
+
+        private void UserMustOwnTodo(User user, Todo todo)
+        {
+            if (user.Id != todo.UserId)
+                throw new Exception("You do not own this Todo item.");
         }
 
     }

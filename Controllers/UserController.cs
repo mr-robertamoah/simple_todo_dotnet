@@ -56,15 +56,16 @@ namespace TodoAPIDotNet.Controllers
 
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync(string id)
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetByTokenAsync()
         {
             try
             {
-                var data = await _service.GetByIdAsync(id);
+                var data = await _service.GetByTokenAsync(User);
 
                 if (data == null)
-                    return NotFound(new { message = $"User with id: {id} was not found."});
+                    return NotFound(new { message = $"Your User information could not be retrieved. You are either not logged in or registered."});
                 
                 return Ok(new { message = $"Successfully retrieved the information of User with id: {id}.", data});
             }
@@ -75,14 +76,14 @@ namespace TodoAPIDotNet.Controllers
         }
 
         [Authorize]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAccountAsync(string id)
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAccountAsync()
         {
             try
             {
-                await _service.DeleteAccountAsync(id);
+                await _service.DeleteAccountAsync(User);
 
-                return Ok(new { message = $"User account with id {id} has been successfully deleted." });
+                return Ok(new { message = $"Your User account has been successfully deleted." });
             }
             catch (Exception e)
             {

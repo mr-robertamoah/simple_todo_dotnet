@@ -113,7 +113,7 @@ namespace TodoAPIDotNet.Controllers
         {
             try
             {
-                await _todoService.DeleteTodoAsync(id);
+                await _todoService.DeleteTodoAsync(id, User);
 
                 return Ok(new { message = $"Todo item with id {id} successfully deleted." });
             }
