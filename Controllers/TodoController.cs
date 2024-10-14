@@ -24,7 +24,7 @@ namespace TodoAPIDotNet.Controllers
         {
             try
             {
-                var todos = await _todoService.GetAllAsync();
+                var todos = await _todoService.GetAllAsync(User);
 
                 if (todos == null || !todos.Any())
                 {
@@ -93,7 +93,7 @@ namespace TodoAPIDotNet.Controllers
         {
             try
             {
-                var todo = await _todoService.GetByIdAsync(id);
+                var todo = await _todoService.GetByIdAsync(id, User);
 
                 if (todo == null)
                     return NotFound(new { message = $"Todo item with id: {id} was not found."});

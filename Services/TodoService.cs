@@ -32,9 +32,7 @@ namespace TodoAPIDotNet.Services
         {
             try
             {
-                User? user = await _userManager.GetUserAsync(principal);
-                if (user == null)
-                    throw new Exception("User is not logged in.");
+                User user = await GetUserFromPrincipal(principal);
                 // TODO: validate due date
                 var todo = _mapper.Map<Todo>(request);
                 todo.CreatedAt = DateTime.UtcNow;
@@ -52,7 +50,7 @@ namespace TodoAPIDotNet.Services
             }
         }
 
-        public async Task DeleteTodoAsync(Guid id)
+        public async Task DeleteTodoAsync(Guid id, ClaimsPrincipal principal)
         {
             var todo = await _todoDbContext.Todos.FindAsync(id);
 
@@ -63,9 +61,13 @@ namespace TodoAPIDotNet.Services
             await _todoDbContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Todo>> GetAllAsync()
+        public async Task<IEnumerable<Todo>> GetAllAsync(ClaimsPrincipal principal)
         {
-            var todos = await _todoDbContext.Todos.ToListAsync();
+            User user = await GetUserFromPrincipal(principal);
+            
+            var todos = await _todoDbContext.Todos
+                .Where(todo => todo.UserId == user.Id)
+                .ToListAsync();
 
             if (todos == null)
             {
@@ -75,15 +77,17 @@ namespace TodoAPIDotNet.Services
             return todos;
         }
 
-        public async Task<Todo> GetByIdAsync(Guid id)
+        public async Task<Todo> GetByIdAsync(Guid id, ClaimsPrincipal principal)
         {
             var todo = await _todoDbContext.Todos.FindAsync(id);
-
             if (todo == null)
-            {
                 throw new KeyNotFoundException($"Todo item with id {id} not found.");
-            }
+            
+            User user = await GetUserFromPrincipal(principal);
 
+            if (user.Id != todo.UserId)
+                throw new Exception("You do not own this Todo item.");
+            
             return todo;
         }
 
@@ -91,14 +95,12 @@ namespace TodoAPIDotNet.Services
         {
             try
             {
-                User? user = await _userManager.GetUserAsync(principal);
-                if (user == null)
-                    throw new Exception("User is not logged in.");
-
                 var todo = await _todoDbContext.Todos.FindAsync(request.Id);
 
                 if (todo == null)
                     throw new KeyNotFoundException($"Todo item with id {request.Id} not found.");
+
+                User user = await GetUserFromPrincipal(principal);
 
                 if (user.Id != todo.UserId)
                     throw new Exception("You do not own this Todo item.");
@@ -135,6 +137,15 @@ namespace TodoAPIDotNet.Services
         {
             _logger.LogError(e, message);
             throw new Exception(message);
+        }
+
+        private async Task<User> GetUserFromPrincipal(ClaimsPrincipal principal)
+        {
+            User? user = await _userManager.GetUserAsync(principal);
+            if (user == null)
+                throw new Exception("User is not logged in.");
+
+            return user;
         }
 
     }

@@ -5,10 +5,10 @@ namespace TodoAPIDotNet.Interfaces
 {
     public interface ITodoService
     {
-        Task<IEnumerable<Todo>> GetAllAsync();
-        Task<Todo> GetByIdAsync(Guid id);
+        Task<IEnumerable<Todo>> GetAllAsync(ClaimsPrincipal principal);
+        Task<Todo> GetByIdAsync(Guid id, ClaimsPrincipal principal);
         Task CreateTodoAsync(CreateTodoRequest request, ClaimsPrincipal principal);
         Task UpdateTodoAsync(UpdateTodoRequest request, ClaimsPrincipal principal);
-        Task DeleteTodoAsync(Guid id);
+        Task DeleteTodoAsync(Guid id, ClaimsPrincipal principal);
     }
 }
