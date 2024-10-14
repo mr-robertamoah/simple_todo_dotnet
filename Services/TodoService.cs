@@ -89,15 +89,23 @@ namespace TodoAPIDotNet.Services
             return todos;
         }
 
-        public async Task<Todo> GetByIdAsync(Guid id, ClaimsPrincipal principal)
+        public async Task<TodoDTO> GetByIdAsync(Guid id, ClaimsPrincipal principal)
         {
-            var todo = await _todoDbContext.Todos.FindAsync(id);
-            if (todo == null)
-                throw new KeyNotFoundException($"Todo item with id {id} not found.");
-            
             User user = await GetUserFromPrincipal(principal);
+            var todo = await _todoDbContext.Todos
+                .Where(todo => todo.UserId == user.Id && todo.Id == id)
+                .Select(todo => new TodoDTO {
+                    Id = todo.Id,
+                    Title = todo.Title,
+                    Description = todo.Description,
+                    IsComplete = todo.IsComplete,
+                    Priority = todo.Priority,
+                    CreatedAt = todo.CreatedAt,
+                })
+                .FirstAsync();
 
-            UserMustOwnTodo(user, todo);
+            if (todo == null)
+                throw new KeyNotFoundException($"Todo item with id {id} not found or does not belong to you.");
             
             return todo;
         }

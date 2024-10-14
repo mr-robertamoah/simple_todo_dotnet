@@ -65,8 +65,8 @@ namespace TodoAPIDotNet.Controllers
             }
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateTodoAsync(UpdateTodoRequest request)
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateTodoAsync(Guid id, UpdateTodoRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -75,6 +75,7 @@ namespace TodoAPIDotNet.Controllers
 
             try
             {
+                request.Id = id;
                 await _todoService.UpdateTodoAsync(request, User);
 
                 return Ok(new { message = $"Todo item with id {request.Id} successfully updated." });
