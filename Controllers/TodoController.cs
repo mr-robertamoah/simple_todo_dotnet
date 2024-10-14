@@ -18,6 +18,7 @@ namespace TodoAPIDotNet.Controllers
             _logger = logger;
         }
 
+// TODO: must provide token and return todo for that user
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -32,7 +33,7 @@ namespace TodoAPIDotNet.Controllers
 
                 return Ok(new { message = "Successfully retrieved all Todo items.", data = todos});
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 string message = "An error occurred while fetching Todo items.";
 
@@ -55,7 +56,7 @@ namespace TodoAPIDotNet.Controllers
 
                 return Ok( new { message = "Todo successfully created."} );
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 string message = "An error occurred while creating a Todo item.";
 
@@ -78,7 +79,7 @@ namespace TodoAPIDotNet.Controllers
 
                 return Ok(new { message = $"Todo item with id {request.Id} successfully updated." });
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 string message = "An error occurred while updating a Todo item.";
 
@@ -99,7 +100,7 @@ namespace TodoAPIDotNet.Controllers
                 
                 return Ok(new { message = $"Successfully retrieved Todo with id: {id}.", data = todo});
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 string message = $"An error occurred while retrieving a Todo item with id {id}.";
 
@@ -116,7 +117,7 @@ namespace TodoAPIDotNet.Controllers
 
                 return Ok(new { message = $"Todo item with id {id} successfully deleted." });
             }
-            catch (System.Exception e)
+            catch (Exception)
             {
                 string message = "An error occurred while deleting a Todo item.";
 

@@ -24,6 +24,9 @@ namespace TodoAPIDotNet.MappingProfiles
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
 
+            CreateMap<UserDTO, User>()
+                .ReverseMap();
+
             CreateMap<UserRegisterRequest, User>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.Name, opt => opt.Ignore())

@@ -197,7 +197,7 @@ namespace TodoAPIDotNet.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("5b61e0eb-abf7-4d76-8702-619428e1d2b1"),
+                            Id = new Guid("92f87854-6c6c-4479-945b-c0f3dd629ddc"),
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "This is a default todo item.",
                             DueDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -241,6 +241,10 @@ namespace TodoAPIDotNet.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -250,7 +254,6 @@ namespace TodoAPIDotNet.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
@@ -296,17 +299,19 @@ namespace TodoAPIDotNet.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9c60d1de-fd30-40a2-ab68-64d021cbd6f6",
-                            CreatedAt = new DateTime(2024, 10, 13, 15, 26, 1, 289, DateTimeKind.Utc).AddTicks(1759),
+                            ConcurrencyStamp = "f2ff3660-d8a5-410e-aa9c-503fa71d712d",
+                            CreatedAt = new DateTime(2024, 10, 14, 3, 28, 13, 685, DateTimeKind.Utc).AddTicks(7546),
                             Email = "mr_robertamoah@example.com",
                             EmailConfirmed = false,
                             IsAdmin = true,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAENJ2iWCbSEhM0gtUXN8WHgsHJKTV/c2f7e5esPi293G1I7Q3CnC+Snx5z5kLT7iSTg==",
+                            NormalizedEmail = "MR_ROBERTAMOAH@EXAMPLE.COM",
+                            NormalizedUserName = "MR_ROBERTAMOAH",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJ7Ut6iW4aKPwOIQ+ni10Raxy3ZAGY8Kgw8OSKiAnKDgleJwL23fv+Jjed2Kofrejw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "03732847-06ac-46c8-af16-7f4637624129",
+                            SecurityStamp = "ce5437a6-c1f8-4367-9651-62f5c20aead5",
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2024, 10, 13, 15, 26, 1, 289, DateTimeKind.Utc).AddTicks(1764),
+                            UpdatedAt = new DateTime(2024, 10, 14, 3, 28, 13, 685, DateTimeKind.Utc).AddTicks(7551),
                             UserName = "mr_robertamoah"
                         });
                 });

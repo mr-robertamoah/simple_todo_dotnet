@@ -31,14 +31,15 @@ namespace TodoAPIDotNet.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsAdmin = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -186,13 +187,13 @@ namespace TodoAPIDotNet.Migrations
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "CreatedAt", "Email", "EmailConfirmed", "IsAdmin", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UpdatedAt", "UserName" },
-                values: new object[] { "1", 0, "9c60d1de-fd30-40a2-ab68-64d021cbd6f6", new DateTime(2024, 10, 13, 15, 26, 1, 289, DateTimeKind.Utc).AddTicks(1759), "mr_robertamoah@example.com", false, true, false, null, null, null, "AQAAAAIAAYagAAAAENJ2iWCbSEhM0gtUXN8WHgsHJKTV/c2f7e5esPi293G1I7Q3CnC+Snx5z5kLT7iSTg==", null, false, "03732847-06ac-46c8-af16-7f4637624129", false, new DateTime(2024, 10, 13, 15, 26, 1, 289, DateTimeKind.Utc).AddTicks(1764), "mr_robertamoah" });
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "CreatedAt", "Email", "EmailConfirmed", "IsAdmin", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UpdatedAt", "UserName" },
+                values: new object[] { "1", 0, "f2ff3660-d8a5-410e-aa9c-503fa71d712d", new DateTime(2024, 10, 14, 3, 28, 13, 685, DateTimeKind.Utc).AddTicks(7546), "mr_robertamoah@example.com", false, true, false, null, null, "MR_ROBERTAMOAH@EXAMPLE.COM", "MR_ROBERTAMOAH", "AQAAAAIAAYagAAAAEJ7Ut6iW4aKPwOIQ+ni10Raxy3ZAGY8Kgw8OSKiAnKDgleJwL23fv+Jjed2Kofrejw==", null, false, "ce5437a6-c1f8-4367-9651-62f5c20aead5", false, new DateTime(2024, 10, 14, 3, 28, 13, 685, DateTimeKind.Utc).AddTicks(7551), "mr_robertamoah" });
 
             migrationBuilder.InsertData(
                 table: "Todos",
                 columns: new[] { "Id", "CreatedAt", "Description", "DueDate", "IsComplete", "Priority", "Title", "UpdatedAt", "UserId" },
-                values: new object[] { new Guid("5b61e0eb-abf7-4d76-8702-619428e1d2b1"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "This is a default todo item.", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0, "Default Todo", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "1" });
+                values: new object[] { new Guid("92f87854-6c6c-4479-945b-c0f3dd629ddc"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "This is a default todo item.", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, 0, "Default Todo", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "1" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

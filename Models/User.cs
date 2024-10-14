@@ -12,13 +12,10 @@ namespace TodoAPIDotNet.Models
         [MaxLength(256)]
         public override string? UserName { get; set; }
         [MaxLength(256)]
-        public string Name;
+        public string? Name { get; set; }
         [Required]
         [EmailAddress]
-        public override string? Email { get; set; }
-        [Required]
-        [MinLength(8)]
-        public string PasswordHash { get; set; }
+        public override string? Email { get; set; }        
         public bool IsAdmin { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

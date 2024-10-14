@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoAPIDotNet.Interfaces;
 
@@ -73,6 +74,7 @@ namespace TodoAPIDotNet.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAccountAsync(string id)
         {
@@ -88,6 +90,7 @@ namespace TodoAPIDotNet.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> LogoutAsync()
         {

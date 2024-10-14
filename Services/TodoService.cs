@@ -35,7 +35,7 @@ namespace TodoAPIDotNet.Services
                 User? user = await _userManager.GetUserAsync(principal);
                 if (user == null)
                     throw new Exception("User is not logged in.");
-
+                // TODO: validate due date
                 var todo = _mapper.Map<Todo>(request);
                 todo.CreatedAt = DateTime.UtcNow;
                 todo.UserId = user.Id;

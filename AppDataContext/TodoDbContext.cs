@@ -24,7 +24,7 @@ namespace TodoAPIDotNet.AppDataContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
+
             modelBuilder.Entity<Todo>()
                 .ToTable("Todos")
                 .HasKey(t => t.Id);
@@ -57,7 +57,9 @@ namespace TodoAPIDotNet.AppDataContext
             {
                 Id = "1",
                 UserName = "mr_robertamoah",
+                NormalizedUserName = "MR_ROBERTAMOAH",
                 Email = "mr_robertamoah@example.com",
+                NormalizedEmail = "MR_ROBERTAMOAH@EXAMPLE.COM",
                 IsAdmin = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow

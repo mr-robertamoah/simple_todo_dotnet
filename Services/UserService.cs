@@ -71,7 +71,7 @@ namespace TodoAPIDotNet.Services
             try
             {
                 User? user = await _context.FindAsync<User>(id);
-
+                
                 return _mapper.Map<UserDTO>(user);
             }
             catch (Exception e)
@@ -112,9 +112,13 @@ namespace TodoAPIDotNet.Services
                 User? user = null;
 
                 if (request.Email != null)
-                    user = await _userManager.FindByEmailAsync(request.Email);
+                    user = await _userManager.FindByEmailAsync(
+                        _userManager.NormalizeEmail(request.Email)
+                    );
                 else if (request.Username != null)
-                    user = await _userManager.FindByNameAsync(request.Username);
+                    user = await _userManager.FindByNameAsync(
+                        _userManager.NormalizeName(request.Username)
+                    );
 
                 if (user == null)
                 {
@@ -150,32 +154,54 @@ namespace TodoAPIDotNet.Services
         {
             try
             {
-                User? user = await _userManager.FindByEmailAsync(request.Email);
+                User? user = await _userManager.FindByEmailAsync(
+                    _userManager.NormalizeEmail(request.Email)
+                );
 
                 if (user != null)
                     throw new Exception("Credentials provided for your account already exists. Consider changing your Email");
 
-                user = await _userManager.FindByNameAsync(request.Username);
+                user = await _userManager.FindByNameAsync(
+                    _userManager.NormalizeName(request.Username)
+                );
 
                 if (user != null)
                     throw new Exception("Credentials provided for your account already exists. Consider changing your Username");
 
-
                 user = new User {
                     UserName = request.Username,
-                    Email = request.Email
+                    Email = request.Email,
+                    NormalizedEmail = _userManager.NormalizeEmail(request.Email),
+                    NormalizedUserName = _userManager.NormalizeName(request.Username),
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    LockoutEnabled = false
                 };
 
-                var identityResult = await _userManager.CreateAsync(
-                    user: user,
-                    password: request.Password
-                );
+                var identityResult = await _userManager.CreateAsync(user, request.Password);
 
+                // TODO: get password relative errors when result fails
+                // TODO: make exceptions thrown from within try get sent to user
+                // TODO: add transactions
                 if (!identityResult.Succeeded)
                     throw new Exception("Failed to create User account.");
 
+                if (_userManager.Options.SignIn.RequireConfirmedEmail)
+                {
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
+                    if (!confirmResult.Succeeded)
+                    {
+                        var errors = string.Join(", ", confirmResult.Errors.Select(e => e.Description));
+                        throw new Exception($"Failed to confirm email: {errors}");
+                    }
+                }
+
+                if (await _userManager.IsLockedOutAsync(user))
+                    await _userManager.SetLockoutEndDateAsync(user, null);
+
                 var signInResult = await _signInManager.PasswordSignInAsync(
-                    user.UserName,
+                    _userManager.NormalizeName(user.UserName),
                     request.Password,
                     false,
                     false
@@ -204,8 +230,14 @@ namespace TodoAPIDotNet.Services
                 new Claim(JwtRegisteredClaimNames.Sid, user.Id)
             };
 
+            var key = _configuration["Jwt:Key"];
+            if (string.IsNullOrEmpty(key) || key.Length < 16)
+            {
+                throw new ArgumentException("JWT key is either missing or too short in configuration.");
+            }
+
             var credentials = new SigningCredentials(
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])), 
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)), 
                 SecurityAlgorithms.HmacSha256
             );
 
@@ -213,7 +245,7 @@ namespace TodoAPIDotNet.Services
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(1),
+                expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: credentials
             );
 
