@@ -67,7 +67,7 @@ namespace TodoAPIDotNet.Controllers
                 if (data == null)
                     return NotFound(new { message = $"Your User information could not be retrieved. You are either not logged in or registered."});
                 
-                return Ok(new { message = $"Successfully retrieved the information of User with id: {id}.", data});
+                return Ok(new { message = $"Successfully retrieved the information of User with id: {data.Id}.", data});
             }
             catch (Exception e)
             {
@@ -106,5 +106,7 @@ namespace TodoAPIDotNet.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+
+        // TODO: add updating user information
     }
 }

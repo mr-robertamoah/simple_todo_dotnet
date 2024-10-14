@@ -31,7 +31,7 @@ namespace TodoAPIDotNet.Controllers
                     return NotFound(new { message = "No Todo items found." });
                 }
 
-                return Ok(new { message = "Successfully retrieved all Todo items.", data = todos});
+                return Ok(new { message = "Successfully retrieved all Todo items.", todos });
             }
             catch (Exception e)
             {

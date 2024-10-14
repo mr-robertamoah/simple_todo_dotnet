@@ -65,12 +65,20 @@ namespace TodoAPIDotNet.Services
             await _todoDbContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Todo>> GetAllAsync(ClaimsPrincipal principal)
+        public async Task<IEnumerable<TodoDTO>> GetAllAsync(ClaimsPrincipal principal)
         {
             User user = await GetUserFromPrincipal(principal);
             
             var todos = await _todoDbContext.Todos
                 .Where(todo => todo.UserId == user.Id)
+                .Select(todo => new TodoDTO {
+                    Id = todo.Id,
+                    Title = todo.Title,
+                    Description = todo.Description,
+                    IsComplete = todo.IsComplete,
+                    Priority = todo.Priority,
+                    CreatedAt = todo.CreatedAt,
+                })
                 .ToListAsync();
 
             if (todos == null)
